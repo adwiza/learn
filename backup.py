@@ -15,7 +15,7 @@ today = target_dir + os.sep + time.strftime('%d-%m-%Y')
 now = time.strftime('%H%M%S')
 # Запрашиваем комментарий пользователя для имени файла
 comment = input('Введите комментарий --> ')
-if len(comment) == 0: # проверяем, введён ли комментарий
+if len(comment) == 0:  # проверяем, введён ли комментарий
     target = today + os.sep + now + '.zip'
 else:
     target = today + os.sep + now + '_' + \
