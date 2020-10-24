@@ -13,6 +13,7 @@ ParseResult = namedtuple(
         'brand_name',
         'goods_name',
         'lower_price',
+        'discount',
         'url',
 
     ),
@@ -22,6 +23,7 @@ HEADERS = (
     'Бренд',
     'Товар',
     'Цена',
+    'Скидка'
     'Ссылка',
 )
 
@@ -102,13 +104,24 @@ class Client:
         lower_price = lower_price.text
         lower_price = lower_price.replace(' ', '').strip()
 
+        discount = price_block.select_one('span.price-sale.active')
+        if not discount:
+            logger.error(f'no discount on {url}')
+            return
+
+        # Clean results
+        discount = discount.text
+        discount = discount.replace(' ', '').strip()
+        discount = discount.replace('-', '').strip()
+
         self.result.append(ParseResult(
             url=url,
             brand_name=brand_name,
             goods_name=goods_name,
             lower_price=lower_price,
+            discount=discount,
         ))
-        logger.debug(f'{url} {brand_name} {goods_name} {lower_price}')
+        logger.debug(f'{url} {brand_name} {goods_name} {lower_price} {discount}')
         logger.debug('-' * 100)
 
     def save_results(self):
