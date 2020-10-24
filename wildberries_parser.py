@@ -128,7 +128,7 @@ class Client:
             discount=discount,
         ))
         logger.debug(f'{url} {brand_name} {goods_name} {lower_price} {discount}')
-        # logger.debug('-' * 100)
+        logger.debug('-' * 100)
 
     def save_results(self):
         path = 'wildberries_handkerchief.csv'
