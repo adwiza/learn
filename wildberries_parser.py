@@ -40,8 +40,8 @@ class Client:
             self.parse_block(block=block)
 
     def parse_block(self, block):
-        logger.info(block)
-        logger.info('=' * 100)
+        # logger.info(block)
+        # logger.info('=' * 100)
 
         url_block = block.select_one('a.ref_goods_n_p') #  j-open-full-product-card
         if not url_block:
