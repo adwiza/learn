@@ -54,7 +54,30 @@ class Client:
             logger.error('no href')
             return
 
-        logger.info(f'{url}')
+        name_block = block.select_one('div.dtlist-inner-brand-name')
+        if not name_block:
+            logger.error(f'no name_block on {url}')
+            return
+
+        brand_name = name_block.select_one('strong.brand-name')
+        if not brand_name:
+            logger.error(f'no brand_name on {url}')
+            return
+
+        # Clean results
+        brand_name = brand_name.text
+        brand_name = brand_name.replace('/', '').strip()
+
+        goods_name = name_block.select_one('span.goods-name')
+        if not goods_name:
+            logger.error(f'no goods_name on {url}')
+            return
+
+        # Clean results
+        goods_name = goods_name.text
+        goods_name = goods_name.replace('/', '').strip()
+
+        logger.info(f'{url} {brand_name} {goods_name}')
 
     def run(self):
         text = self.load_page()
