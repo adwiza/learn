@@ -1,20 +1,30 @@
 import logging
 import requests
 import bs4
+import csv
 from collections import namedtuple
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('wilberries')
 
-ParseResut = namedtuple(
+ParseResult = namedtuple(
     'ParseResult',
     (
         'brand_name',
         'goods_name',
+        'lower_price',
         'url',
-        #'price',
+
     ),
 )
+
+HEADERS = (
+    'Бренд',
+    'Товар',
+    'Цена',
+    'Ссылка',
+)
+
 
 class Client:
 
@@ -40,9 +50,6 @@ class Client:
             self.parse_block(block=block)
 
     def parse_block(self, block):
-        # logger.info(block)
-        # logger.info('=' * 100)
-
         url_block = block.select_one('a.ref_goods_n_p') #  j-open-full-product-card
         if not url_block:
             logger.error('no_url_block')
@@ -77,11 +84,47 @@ class Client:
         goods_name = goods_name.text
         goods_name = goods_name.replace('/', '').strip()
 
-        logger.info(f'{url} {brand_name} {goods_name}')
+        price_block = block.select_one('div.j-cataloger-price')
+        if not price_block:
+            logger.error(f'no price_block on {url}')
+            return
+
+        # Clean results
+        # price_block = price_block.text
+        # price_block = price_block.replace('/', '').strip()
+
+        lower_price = price_block.select_one('ins.lower-price')
+        if not lower_price:
+            logger.error(f'no lower_price on {url}')
+            return
+
+        # Clean results
+        lower_price = lower_price.text
+        lower_price = lower_price.replace(' ', '').strip()
+
+        self.result.append(ParseResult(
+            url=url,
+            brand_name=brand_name,
+            goods_name=goods_name,
+            lower_price=lower_price,
+        ))
+        logger.debug(f'{url} {brand_name} {goods_name} {lower_price}')
+        logger.debug('-' * 100)
+
+    def save_results(self):
+        path = 'wildberries_handkerchief.csv'
+        with open(path, 'w') as f:
+            writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(HEADERS)
+            for item in self.result:
+                writer.writerow(item)
 
     def run(self):
         text = self.load_page()
         self.parse_page(text=text)
+        logger.info(f'Получили {len(self.result)} карточек')
+
+        self.save_results()
 
 
 if __name__ == '__main__':
