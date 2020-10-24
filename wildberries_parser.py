@@ -1,10 +1,12 @@
 import logging
+import os
+
 import requests
 import bs4
 import csv
 from collections import namedtuple
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('wilberries')
 
 ParseResult = namedtuple(
@@ -38,18 +40,26 @@ class Client:
         }
         self.result = []
 
-    def load_page(self, page: int=None):
-        url = 'https://www.wildberries.ru/search?text=%D1%88%D0%B5%D0%BB%D0%BA%D0%BE%D0%B2%D1%8B%' \
-              'D0%B9%20%D0%BF%D0%BB%D0%B0%D1%82%D0%BE%D0%BA'
+    def load_page(self, url):
         res = self.session.get(url=url)
         res.raise_for_status()
         return res.text
 
     def parse_page(self, text: str):
         soup = bs4.BeautifulSoup(text, 'lxml')
+        pages = soup.find('div', class_='pager i-pager').find_all('a', class_='pagination-item')[-1].get('href')
+        total_pages = pages.split('=')[2]
         container = soup.select('div.dtList.i-dtList.j-card-item')
         for block in container:
             self.parse_block(block=block)
+
+    def item_quantity(self, text: str):
+        soup = bs4.BeautifulSoup(text, 'lxml')
+        pages = soup.find('div', class_='pager i-pager').find_all('a', class_='pagination-item')[-1].get('href')
+        total_pages = pages.split('=')[2]
+        container = soup.select('div.searching-results-wrap')
+        for items in container:
+            self.parse_block(block=items)
 
     def parse_block(self, block):
         url_block = block.select_one('a.ref_goods_n_p') #  j-open-full-product-card
@@ -91,10 +101,6 @@ class Client:
             logger.error(f'no price_block on {url}')
             return
 
-        # Clean results
-        # price_block = price_block.text
-        # price_block = price_block.replace('/', '').strip()
-
         lower_price = price_block.select_one('ins.lower-price')
         if not lower_price:
             logger.error(f'no lower_price on {url}')
@@ -122,22 +128,35 @@ class Client:
             discount=discount,
         ))
         logger.debug(f'{url} {brand_name} {goods_name} {lower_price} {discount}')
-        logger.debug('-' * 100)
+        # logger.debug('-' * 100)
 
     def save_results(self):
         path = 'wildberries_handkerchief.csv'
-        with open(path, 'w') as f:
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+
+        with open(path, 'a') as f:
             writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
             writer.writerow(HEADERS)
             for item in self.result:
                 writer.writerow(item)
 
     def run(self):
-        text = self.load_page()
-        self.parse_page(text=text)
-        logger.info(f'Получили {len(self.result)} карточек')
-
-        self.save_results()
+        base_url = 'https://www.wildberries.ru/'
+        query_path = 'search?text=шелковый%20платок'
+        page_path = '&page='
+        total_pages = 65
+        for i in range(1, total_pages):
+            if len(self.result) <= 6064:
+                url_gen = base_url + query_path + page_path + str(i)
+                text = self.load_page(url_gen)
+                self.parse_page(text=text)
+                logger.info(f'Получили {len(self.result)} карточек')
+                self.save_results()
+            else:
+                break
 
 
 if __name__ == '__main__':
