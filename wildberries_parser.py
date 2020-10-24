@@ -109,6 +109,7 @@ class Client:
         # Clean results
         lower_price = lower_price.text
         lower_price = lower_price.replace(' ', '').strip()
+        lower_price = lower_price.replace('₽', '')
 
         discount = price_block.select_one('span.price-sale.active')
         if not discount:
@@ -119,6 +120,7 @@ class Client:
         discount = discount.text
         discount = discount.replace(' ', '').strip()
         discount = discount.replace('-', '').strip()
+        discount = discount.replace('%', '').strip()
 
         self.result.append(ParseResult(
             url=url,
