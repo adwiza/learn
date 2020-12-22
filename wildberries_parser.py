@@ -152,7 +152,7 @@ class Client:
         total_pages = 65
         for i in range(1, total_pages):
             if len(self.result) <= 6064:
-                url_gen = base_url + query_path + page_path + str(i)
+                url_gen = base_url + query_path + page_path + str(i)  # TODO change to urljoin
                 text = self.load_page(url_gen)
                 self.parse_page(text=text)
                 logger.info(f'Получили {len(self.result)} карточек')
