@@ -18,7 +18,7 @@ def repo_copier():
     for dir_path, dir_names, file_names in os.walk(path, topdown=False):
         os.chdir(dir_path)
         for d in file_names:
-            os.system(f'curl -v -u admin:bmV4dXMtYWRtaW4= --upload-file {d} http://inf-o-nexus-p3.gu.local:8081/repository/{repo_name}{dir_path}/')
+            os.system(f'curl -v -u admin:bmV4dXMtYWRtaW4= --upload-file {d} http://inf-o-nexus-p3.gu.local:8081/repository/{repo_name}{dir_path}/{d}')
             # os.system(f'curl get http://ya.ru/{repo_name}{dir_path}/')
             # print(f'curl -v -u admin:bmV4dXMtYWRtaW4= --upload-file {d} http://inf-o-nexus-p3.gu.local:8081/repository/{repo_name}{dir_path}/')
 
