@@ -1,0 +1,15 @@
+   h1 {
+        color: red;
+    }
+    h2.very-big {
+        color: brown;
+    }
+    .very-right {
+        text-align: right;
+<!--        margin-top: 30px;-->
+<!--        margin-right: 50px;-->
+        margin: 30px 50 0 0;
+    }
+    h2#interesting-one {
+        color: blue;
+    }v
