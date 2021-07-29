@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Основная страница</title>
-    <script src="helper.js"></script>
+    <!--<script src="helper.js"></script> -->
     <script
 			  src="https://code.jquery.com/jquery-3.6.0.min.js"
 			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
@@ -21,5 +21,14 @@
     <p id="f-5" class="very-big very-right">Кстати немного <a href="about.html"> о нас</a>.</p>
     <p id="f-6">Кстати немного <a href="about.html"> о нас</a>.</p>
 </body>
+<script>
+function get_pred(data) {
+    fff(data["num"], data["prediction"]);
+}
+function fff(i, text) {
+    $("#f-" + i).text(text);
+}
+$.getJSON("http://localhost:8080/generate", get_pred);
+</script>
 <link rel="stylesheet" href="styles.css">
 </html>

@@ -1,9 +1,8 @@
-from bottle import route, run, response
+from bottle import route, run
 from random import choice, randrange
 
 
-@route("/generate")
-def generate_something():
+def generate_some():
     first = ['Утром', 'Завтра', 'В полдень']
     second = ['ожидайте', 'будьте вниматеьлны к', 'забудьте', 'съешьте']
     third = ['гостей', 'людей', 'забытых знакомых', 'зонтиков', 'осадков']
@@ -13,14 +12,7 @@ def generate_something():
     while i < 5:
         g = choice(first) + ' ' + choice(second) + ' ' + choice(third) + '.'
         i += 1
-        response.headers['Access-Control-Allow-Origin'] = '*'
+        result.append(g)
     return {
-        'prediction': g,
-        'num': randrange(1, 6)
+        'prophecies': result,
     }
-
-
-
-
-
-run()
