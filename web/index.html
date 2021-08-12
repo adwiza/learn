@@ -12,6 +12,8 @@
 
 </head>
 <body>
+   <div> <h1 id="click_me">Нажми меня</h1> </div>
+   <div>
     <h1 id="f-1">Заголовок</h1>
     <h2 id="f-2" class="very-big">Test</h2>
     <h2 id="f-3">QQ</h2>
@@ -20,15 +22,18 @@
 
     <p id="f-5" class="very-big very-right">Кстати немного <a href="about.html"> о нас</a>.</p>
     <p id="f-6">Кстати немного <a href="about.html"> о нас</a>.</p>
+   </div>
 </body>
 <script>
 function get_pred(data) {
-    fff(data["num"], data["prediction"]);
+    $("#f-" + data["num"]).text(data["prediction"]);
 }
-function fff(i, text) {
-    $("#f-" + i).text(text);
+function pred() {
+    $.getJSON("http://localhost:8080/generate", get_pred);
 }
-$.getJSON("http://localhost:8080/generate", get_pred);
+
+$("#click_me").click(pred);
+
 </script>
 <link rel="stylesheet" href="styles.css">
 </html>
